@@ -8,15 +8,15 @@
 import Foundation
 import CoreData
 
-@objc(User)
-public class User: NSManagedObject {
-    @NSManaged public var id: UUID?
-    @NSManaged public var nombre: String?
-    @NSManaged public var correo: String?
-    @NSManaged public var rol: String? // "Estudiante", "Emprendedor", "Admin"
-    @NSManaged public var objetivoSalud: String? // Para la IA de recomendaciones
+// Definición de la entidad en tu código
+struct UserAccount {
+    let id: UUID
+    let email: String
+    let passwordHash: String
+    let role: UserRole // .estudiante o .emprendedor
     
-    // Relaciones
-    @NSManaged public var productos: NSSet? // Para el Emprendedor
-    @NSManaged public var pedidos: NSSet?    // Para el Estudiante
+    // Datos específicos
+    var nombreCompleto: String
+    var universidad: String? // Solo para estudiantes
+    var nombreNegocio: String? // Solo para emprendedores
 }

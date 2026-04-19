@@ -7,7 +7,12 @@
 
 import UIKit
 
+protocol RegistroProductoDelegate: AnyObject {
+    func didRegisterProduct(_ product: Product)
+}
+
 final class RegistroProductoViewController: UIViewController {
+    weak var delegate: RegistroProductoDelegate? // Propiedad del delegado
 
     // MARK: - UI Elements
     private let scrollView: UIScrollView = {
@@ -126,28 +131,20 @@ final class RegistroProductoViewController: UIViewController {
               let descripcion = descripcionTextView.text else {
             return
         }
-
-        // ORDEN CORREGIDO según el error de Xcode:
+        
         let nuevoProducto = Product(
             name: nombre,
             description: descripcion,
             price: precio,
             category: "General",
             imageNames: ["box.truck"],
-            isAvailable: stockSwitch.isOn // isAvailable al final
+            isAvailable: stockSwitch.isOn
         )
-
-        print("Producto creado exitosamente: \(nuevoProducto.name)")
+        
+        // Notificamos al catálogo que hay un nuevo producto
+        delegate?.didRegisterProduct(nuevoProducto)
+        
         self.navigationController?.popViewController(animated: true)
-
-        // Simulación: En un proyecto real, aquí guardarías en CoreData
-        print("Guardando: \(nuevoProducto.name)")
-
-        let exito = UIAlertController(title: "¡Éxito!", message: "Producto registrado en HealthyGo", preferredStyle: .alert)
-        exito.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            self.navigationController?.popViewController(animated: true)
-        })
-        present(exito, animated: true)
     }
 
     private func mostrarAlerta(mensaje: String) {

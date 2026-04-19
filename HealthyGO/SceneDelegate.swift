@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         
         // Aquí es donde defines que la app inicie con tu nuevo catálogo
-        let rootVC = CatalogoViewController()
+        let rootVC = LoginViewController()
         let navigationController = UINavigationController(rootViewController: rootVC)
         
         window.rootViewController = navigationController

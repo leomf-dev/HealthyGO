@@ -9,8 +9,8 @@ import UIKit
 
 final class CatalogoViewController: UIViewController {
 
-    private let productos = Product.sampleData()
-
+    private var productos = Product.sampleData()
+    
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -33,8 +33,13 @@ final class CatalogoViewController: UIViewController {
             target: self,
             action: #selector(abrirCarrito)
         )
+        
+        // En setupUI o viewDidLoad de CatalogoViewController
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(image: UIImage(systemName: "cart.fill"), style: .plain, target: self, action: #selector(abrirCarrito)),
+        ]
     }
-
+    
     @objc private func abrirCarrito() {
         let carritoVC = CarritoViewController()
         navigationController?.pushViewController(carritoVC, animated: true)
@@ -86,5 +91,14 @@ extension CatalogoViewController: UITableViewDataSource, UITableViewDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
             alert.dismiss(animated: true)
         }
+    }
+}
+
+extension CatalogoViewController: RegistroProductoDelegate {
+    func didRegisterProduct(_ product: Product) {
+        // Insertamos el nuevo producto al inicio de la lista
+        self.productos.insert(product, at: 0)
+        // Recargamos la tabla para que aparezca
+        self.tableView.reloadData()
     }
 }
