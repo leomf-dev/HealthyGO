@@ -5,18 +5,22 @@
 //  Created by DESIGN on 16/04/26.
 //
 
-import Foundation
-import CoreData
+import UIKit
 
-@objc(Product)
-public class Product: NSManagedObject {
-    @NSManaged public var id: UUID?
-    @NSManaged public var nombre: String?
-    @NSManaged public var precio: Double
-    @NSManaged public var categoria: String?
-    @NSManaged public var stock: Int32
-    @NSManaged public var imagenURL: String? // Link local o remoto
-    
-    // Relación inversa
-    @NSManaged public var emprendedor: User?
+struct Product {
+    var name: String
+    var description: String
+    var price: Double
+    var category: String
+    var imageNames: [String]
+    var isAvailable: Bool // Mantenerlo al final para coincidir con el error de Xcode
+}
+
+extension Product {
+    static func sampleData() -> [Product] {
+        return [
+            Product(name: "Ensalada Proteica", description: "Pollo, quinua y palta", price: 18.50, category: "Almuerzo", imageNames: ["leaf.fill"], isAvailable: true),
+            Product(name: "Jugo Detox", description: "Manzana verde y apio", price: 12.00, category: "Bebidas", imageNames: ["cup.and.saucer.fill"], isAvailable: true)
+        ]
+    }
 }

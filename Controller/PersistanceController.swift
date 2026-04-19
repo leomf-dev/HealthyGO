@@ -33,18 +33,18 @@ struct PersistenceController {
     }
     
     // Función útil para el integrante encargado de crear datos de prueba (Mock Data)
-    static var preview: PersistenceController = {
-        let result = PersistenceController(inMemory: true)
-        let viewContext = result.container.viewContext
-        
-        // Ejemplo de datos para que el equipo vea algo al diseñar la UI [cite: 10, 83]
-        let newProduct = Product(context: viewContext)
-        newProduct.id = UUID()
-        newProduct.nombre = "Ensalada Integral"
-        newProduct.precio = 15.50
-        newProduct.categoria = "Almuerzo"
-        
-        try? viewContext.save()
-        return result
-    }()
+//    static var preview: PersistenceController = {
+//        let result = PersistenceController(inMemory: true)
+//        let viewContext = result.container.viewContext
+//        
+//        // Ejemplo de datos para que el equipo vea algo al diseñar la UI [cite: 10, 83]
+//        let newProduct = Product(context: viewContext)
+//        newProduct.id = UUID()
+//        newProduct.nombre = "Ensalada Integral"
+//        newProduct.precio = 15.50
+//        newProduct.categoria = "Almuerzo"
+//        
+//        try? viewContext.save()
+//        return result
+//    }()
 }

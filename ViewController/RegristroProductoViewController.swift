@@ -1,0 +1,166 @@
+//
+//  RegristroProductoViewController.swift
+//  HealthyGO
+//
+//  Created on 18/04/26.
+//
+
+import UIKit
+
+final class RegistroProductoViewController: UIViewController {
+
+    // MARK: - UI Elements
+    private let scrollView: UIScrollView = {
+        let sv = UIScrollView()
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        return sv
+    }()
+
+    private let contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    private let nombreTextField: UITextField = {
+        let tf = UITextField()
+        tf.placeholder = "Nombre del producto (ej: Ensalada César)"
+        tf.borderStyle = .roundedRect
+        tf.translatesAutoresizingMaskIntoConstraints = false
+        return tf
+    }()
+
+    private let precioTextField: UITextField = {
+        let tf = UITextField()
+        tf.placeholder = "Precio (S/)"
+        tf.keyboardType = .decimalPad
+        tf.borderStyle = .roundedRect
+        tf.translatesAutoresizingMaskIntoConstraints = false
+        return tf
+    }()
+
+    private let descripcionTextView: UITextView = {
+        let tv = UITextView()
+        tv.layer.borderWidth = 0.5
+        tv.layer.borderColor = UIColor.systemGray4.cgColor
+        tv.layer.cornerRadius = 5
+        tv.font = .systemFont(ofSize: 16)
+        tv.translatesAutoresizingMaskIntoConstraints = false
+        return tv
+    }()
+
+    private let stockSwitch: UISwitch = {
+        let sw = UISwitch()
+        sw.isOn = true
+        sw.onTintColor = .systemTeal
+        sw.translatesAutoresizingMaskIntoConstraints = false
+        return sw
+    }()
+
+    private lazy var guardarButton: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setTitle("Registrar Producto", for: .normal)
+        btn.backgroundColor = .systemTeal
+        btn.setTitleColor(.white, for: .normal)
+        btn.layer.cornerRadius = 10
+        btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        btn.addTarget(self, action: #selector(guardarProducto), for: .touchUpInside)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        return btn
+    }()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "Nuevo Producto"
+        view.backgroundColor = .white
+        setupUI()
+    }
+
+    private func setupUI() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        let stackView = UIStackView(arrangedSubviews: [
+            UILabel().then { ($0 as? UILabel)?.text = "Datos del Plato"; ($0 as? UILabel)?.font = .boldSystemFont(ofSize: 20) },
+            nombreTextField,
+            precioTextField,
+            UILabel().then { ($0 as? UILabel)?.text = "Descripción:"; ($0 as? UILabel)?.font = .systemFont(ofSize: 16, weight: .medium) },
+            descripcionTextView,
+            UIStackView(arrangedSubviews: [
+                UILabel().then { ($0 as? UILabel)?.text = "¿Disponible hoy?" },
+                stockSwitch
+            ]).then { ($0 as? UIStackView)?.spacing = 10 },
+            guardarButton
+        ])
+
+        // Corrección para el error 'vertical'
+        stackView.axis = .vertical
+        stackView.spacing = 20
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(stackView)
+
+        // Constraints de Scroll y Stack
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+            
+            descripcionTextView.heightAnchor.constraint(equalToConstant: 100),
+            guardarButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+
+    @objc private func guardarProducto() {
+        guard let nombre = nombreTextField.text, !nombre.isEmpty,
+              let precioStr = precioTextField.text, let precio = Double(precioStr),
+              let descripcion = descripcionTextView.text else {
+            return
+        }
+
+        // ORDEN CORREGIDO según el error de Xcode:
+        let nuevoProducto = Product(
+            name: nombre,
+            description: descripcion,
+            price: precio,
+            category: "General",
+            imageNames: ["box.truck"],
+            isAvailable: stockSwitch.isOn // isAvailable al final
+        )
+
+        print("Producto creado exitosamente: \(nuevoProducto.name)")
+        self.navigationController?.popViewController(animated: true)
+
+        // Simulación: En un proyecto real, aquí guardarías en CoreData
+        print("Guardando: \(nuevoProducto.name)")
+
+        let exito = UIAlertController(title: "¡Éxito!", message: "Producto registrado en HealthyGo", preferredStyle: .alert)
+        exito.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            self.navigationController?.popViewController(animated: true)
+        })
+        present(exito, animated: true)
+    }
+
+    private func mostrarAlerta(mensaje: String) {
+        let alert = UIAlertController(title: "Atención", message: mensaje, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Entendido", style: .default))
+        present(alert, animated: true)
+    }
+}
+
+// Helper para configuración rápida de vistas
+extension UIView {
+    func then(_ block: (UIView) -> Void) -> Self {
+        block(self)
+        return self
+    }
+}
