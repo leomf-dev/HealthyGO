@@ -39,13 +39,23 @@ final class CartManager {
         items.removeAll(where: { $0.product.name == product.name })
     }
     
-    // Cálculo del Total General [cite: 100, 102]
-    var totalAmount: Double {
-        return items.reduce(0.0) { $0 + $1.subtotal }
+    // MARK: - Método de Limpieza
+    func clearCart() {
+        // Vaciamos el arreglo por completo
+        self.items.removeAll()
+            
+        // Opcional: Si usas notificaciones o delegados para avisar a otras pantallas
+        // que el carrito cambió, deberías dispararlos aquí.
+        print("Carrito vaciado con éxito.")
     }
-    
-    // Validación de carrito vacío para habilitar el pedido [cite: 103]
+        
+    // Propiedad calculada para saber si hay algo en el carrito
     var isNotEmpty: Bool {
         return !items.isEmpty
+    }
+        
+    // Propiedad para calcular el total acumulado
+    var totalAmount: Double {
+        return items.reduce(0) { $0 + ($1.product.price * Double($1.quantity)) }
     }
 }

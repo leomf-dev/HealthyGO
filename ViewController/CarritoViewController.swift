@@ -96,17 +96,26 @@ class CarritoViewController: UIViewController {
 
     func actualizarCarrito() {
         tableView.reloadData()
+        
         let total = CartManager.shared.totalAmount
         totalLabel.text = String(format: "Total HealthyGo: S/ %.2f", total)
         
-        // Habilitar o deshabilitar botón si el carrito está vacío
-        confirmarButton.isEnabled = CartManager.shared.isNotEmpty
-        confirmarButton.backgroundColor = CartManager.shared.isNotEmpty ? .systemTeal : .systemGray4
+        // Si el carrito está vacío, mostramos un mensaje o deshabilitamos el botón
+        if !CartManager.shared.isNotEmpty {
+            confirmarButton.isEnabled = false
+            confirmarButton.backgroundColor = .systemGray4
+            // Opcional: podrías poner un label de "No hay productos" sobre la tabla
+        } else {
+            confirmarButton.isEnabled = true
+            confirmarButton.backgroundColor = .systemTeal
+        }
     }
     
     @objc private func continuarAlPago() {
-        // Aquí lanzaremos la pantalla de confirmación que pediste
-        mostrarConfirmacionPago()
+        guard CartManager.shared.isNotEmpty else { return }
+        let pagoVC = ConfirmacionPagoViewController()
+        pagoVC.totalAPagar = CartManager.shared.totalAmount
+        navigationController?.pushViewController(pagoVC, animated: true)
     }
 }
 

@@ -19,6 +19,7 @@
 		298A2AF32F9488FC00F74DFE /* HsitorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298A2AF22F9488EF00F74DFE /* HsitorialViewController.swift */; };
 		298A2AF52F948CA600F74DFE /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298A2AF42F948C9F00F74DFE /* LoginViewController.swift */; };
 		298A2AF72F94913B00F74DFE /* RegistroUsuarioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298A2AF62F94913200F74DFE /* RegistroUsuarioViewController.swift */; };
+		2991D1982F95B65B009AC885 /* ConfirmacionPagoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2991D1972F95B651009AC885 /* ConfirmacionPagoViewController.swift */; };
 		B53939FF2F91A2BC002214DA /* Healthy.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B53939FD2F91A2BC002214DA /* Healthy.xcdatamodeld */; };
 		B5393A062F91AB15002214DA /* PersistanceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5393A042F91AA84002214DA /* PersistanceController.swift */; };
 		B5393A092F91AC59002214DA /* CarritoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5393A082F91AB6B002214DA /* CarritoViewController.swift */; };
@@ -41,6 +42,7 @@
 		298A2AF22F9488EF00F74DFE /* HsitorialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HsitorialViewController.swift; sourceTree = "<group>"; };
 		298A2AF42F948C9F00F74DFE /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		298A2AF62F94913200F74DFE /* RegistroUsuarioViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistroUsuarioViewController.swift; sourceTree = "<group>"; };
+		2991D1972F95B651009AC885 /* ConfirmacionPagoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmacionPagoViewController.swift; sourceTree = "<group>"; };
 		B53939E12F91A127002214DA /* HealthyGO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HealthyGO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B53939FA2F91A205002214DA /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		B53939FB2F91A225002214DA /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 		B5393A032F91AA50002214DA /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				2991D1972F95B651009AC885 /* ConfirmacionPagoViewController.swift */,
 				298A2AF62F94913200F74DFE /* RegistroUsuarioViewController.swift */,
 				298A2AF42F948C9F00F74DFE /* LoginViewController.swift */,
 				298A2AF22F9488EF00F74DFE /* HsitorialViewController.swift */,
@@ -236,6 +239,7 @@
 				298A2AEB2F94696400F74DFE /* RegristroProductoViewController.swift in Sources */,
 				B5393A062F91AB15002214DA /* PersistanceController.swift in Sources */,
 				298A2AE42F945A8700F74DFE /* CartManager.swift in Sources */,
+				2991D1982F95B65B009AC885 /* ConfirmacionPagoViewController.swift in Sources */,
 				B5393A092F91AC59002214DA /* CarritoViewController.swift in Sources */,
 				B5393A0C2F91AC69002214DA /* Product.swift in Sources */,
 				B5393A0B2F91AC63002214DA /* Order.swift in Sources */,

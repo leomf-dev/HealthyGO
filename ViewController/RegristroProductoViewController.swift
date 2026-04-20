@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol RegistroProductoDelegate: AnyObject {
     func didRegisterProduct(_ product: Product)
@@ -126,25 +127,50 @@ final class RegistroProductoViewController: UIViewController {
     }
 
     @objc private func guardarProducto() {
+        // 1. Validaciones
         guard let nombre = nombreTextField.text, !nombre.isEmpty,
               let precioStr = precioTextField.text, let precio = Double(precioStr),
               let descripcion = descripcionTextView.text else {
+            mostrarAlerta(mensaje: "Completa los campos obligatorios.")
             return
         }
         
-        let nuevoProducto = Product(
-            name: nombre,
-            description: descripcion,
-            price: precio,
-            category: "General",
-            imageNames: ["box.truck"],
-            isAvailable: stockSwitch.isOn
-        )
+        // 2. Acceso a Core Data
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistentContainer.viewContext
         
-        // Notificamos al catálogo que hay un nuevo producto
-        delegate?.didRegisterProduct(nuevoProducto)
+        // 3. Crear el objeto con los nombres EXACTOS de tu imagen
+        let productDB = NSEntityDescription.insertNewObject(forEntityName: "Product", into: context)
         
-        self.navigationController?.popViewController(animated: true)
+        // ATRIBUTOS SEGÚN TU CAPTURA image_cf70c6.jpg
+        productDB.setValue(UUID(), forKey: "id")
+        productDB.setValue(nombre, forKey: "nombre")         // Antes era 'name'
+        productDB.setValue(precio, forKey: "precio")         // Antes era 'price'
+        productDB.setValue(descripcion, forKey: "descripcion") // Antes era 'description'
+        productDB.setValue("General", forKey: "categoria")   // Tu atributo es 'categoria' (sin tilde)
+        productDB.setValue(stockSwitch.isOn ? 1 : 0, forKey: "stock") // Tu stock es Integer 32 (1=Disponible, 0=No)
+        productDB.setValue("caja.paquete", forKey: "imagenURL") // Para guardar un icono o ruta
+        
+        do {
+            try context.save()
+            print("Producto guardado exitosamente con la nueva estructura")
+            
+            // Notificar a la pantalla anterior para que se vea el cambio sin reiniciar
+            let nuevoProducto = Product(
+                name: nombre,
+                description: descripcion,
+                price: precio,
+                category: "General",
+                imageNames: ["box.truck"],
+                isAvailable: stockSwitch.isOn
+            )
+            
+            delegate?.didRegisterProduct(nuevoProducto)
+            self.navigationController?.popViewController(animated: true)
+            
+        } catch {
+            print("Error al guardar: \(error.localizedDescription)")
+        }
     }
 
     private func mostrarAlerta(mensaje: String) {

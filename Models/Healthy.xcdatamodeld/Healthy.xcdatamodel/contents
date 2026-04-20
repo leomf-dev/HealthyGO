@@ -12,6 +12,7 @@
     <entity name="OrderItem" representedClassName="OrderItem" syncable="YES" codeGenerationType="class"/>
     <entity name="Product" representedClassName="Product" syncable="YES">
         <attribute name="categoria" optional="YES" attributeType="String"/>
+        <attribute name="descripcion" optional="YES" attributeType="String"/>
         <attribute name="emprendedor" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="imagenURL" optional="YES" attributeType="String"/>
@@ -23,7 +24,7 @@
         <attribute name="correo" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="infoExtra" optional="YES" attributeType="String"/>
-        <attribute name="nombre" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="objetivoSalud" optional="YES" attributeType="String"/>
         <attribute name="password" optional="YES" attributeType="String"/>
         <attribute name="rol" optional="YES" attributeType="String"/>

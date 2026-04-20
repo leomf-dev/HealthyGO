@@ -6,54 +6,84 @@
 //
 
 import UIKit
+import CoreData
 
 final class HistorialViewController: UIViewController {
     
-    private var pedidos: [Order] = []
+    // 1. DECLARACIÓN DE LA VARIABLE (Esto corrige el error)
+    private var pedidosGuardados: [NSManagedObject] = []
     
     private let tableView: UITableView = {
-        let table = UITableView(frame: .zero, style: .insetGrouped)
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "OrderCell")
-        return table
+        let tv = UITableView(frame: .zero, style: .insetGrouped)
+        tv.translatesAutoresizingMaskIntoConstraints = false
+        return tv
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        cargarDatosSegunRol()
+        cargarHistorialDesdeBD()
     }
-    
+
     private func setupUI() {
-        title = SessionManager.currentUserRole == .estudiante ? "Mis Compras" : "Ventas Recibidas"
+        title = "Mi Consumo"
+        view.backgroundColor = .systemGroupedBackground
         view.addSubview(tableView)
-        tableView.frame = view.bounds
+        
         tableView.dataSource = self
+        tableView.delegate = self
+        // Asegúrate de registrar una celda, puede ser una básica por ahora
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "HistorialCell")
+        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
-    
-    private func cargarDatosSegunRol() {
-        // Simulación de datos cargados
-        pedidos = [
-            Order(id: "001", date: Date(), items: [], total: 30.50, status: "Entregado"),
-            Order(id: "002", date: Date().addingTimeInterval(-86400), items: [], total: 15.00, status: "Entregado")
-        ]
-        tableView.reloadData()
+
+    private func cargarHistorialDesdeBD() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistentContainer.viewContext
+        
+        // Usamos la entidad 'Order' que vimos en tu esquema
+        let request = NSFetchRequest<NSManagedObject>(entityName: "Order")
+        
+        // Ordenar: Los más recientes primero
+        let sortDescriptor = NSSortDescriptor(key: "fecha", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        
+        do {
+            self.pedidosGuardados = try context.fetch(request)
+            tableView.reloadData()
+        } catch {
+            print("Error al obtener el historial: \(error)")
+        }
     }
 }
 
-extension HistorialViewController: UITableViewDataSource {
+// MARK: - TableView DataSource
+extension HistorialViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return pedidos.count
+        return pedidosGuardados.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "OrderCell")
-        let pedido = pedidos[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "HistorialCell", for: indexPath)
+        let pedido = pedidosGuardados[indexPath.row]
         
+        // Extraer datos usando las llaves de tu esquema Core Data
+        let total = pedido.value(forKey: "total") as? Double ?? 0.0
+        let fecha = pedido.value(forKey: "fecha") as? Date ?? Date()
+        
+        // Formatear la fecha para que se vea bien
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
+        formatter.timeStyle = .short
         
-        cell.textLabel?.text = "Pedido #\(pedido.id) - S/ \(pedido.total)"
-        cell.detailTextLabel?.text = "Fecha: \(formatter.string(from: pedido.date)) | Estado: \(pedido.status)"
+        cell.textLabel?.text = "Pedido: S/ \(String(format: "%.2f", total))"
+        cell.detailTextLabel?.text = formatter.string(from: fecha)
         cell.accessoryType = .disclosureIndicator
         
         return cell

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 final class MisProductosViewController: UIViewController {
     
@@ -21,7 +22,7 @@ final class MisProductosViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        cargarProductosSimulados()
+        cargarProductosDesdeBD()
     }
     
     private func setupUI() {
@@ -48,16 +49,33 @@ final class MisProductosViewController: UIViewController {
         ])
     }
     
-    private func cargarProductosSimulados() {
-        misProductos = [
-            Product(name: "Ensalada Proteica", description: "Pollo, quinua y palta", price: 18.50, category: "Almuerzo", imageNames: ["leaf.fill"], isAvailable: true),
-            Product(name: "Jugo Detox", description: "Manzana verde y apio", price: 12.00, category: "Bebidas", imageNames: ["cup.and.saucer.fill"], isAvailable: false)
-        ]
-        tableView.reloadData()
+    private func cargarProductosDesdeBD() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistentContainer.viewContext
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Product")
+        
+        do {
+            let results = try context.fetch(request) as? [NSManagedObject]
+            self.misProductos = results?.compactMap { obj in
+                Product(
+                    name: obj.value(forKey: "nombre") as? String ?? "",
+                    description: obj.value(forKey: "descripcion") as? String ?? "",
+                    price: obj.value(forKey: "precio") as? Double ?? 0.0,
+                    category: obj.value(forKey: "categoria") as? String ?? "General",
+                    imageNames: ["leaf.fill"],
+                    isAvailable: (obj.value(forKey: "stock") as? Int ?? 0) == 1
+                )
+            } ?? []
+            tableView.reloadData()
+        } catch {
+            print("Error al cargar: \(error)")
+        }
     }
     
     @objc private func agregarNuevoProducto() {
         let registroVC = RegistroProductoViewController()
+        // CRÍTICO: Esta línea conecta ambas pantallas
+        registroVC.delegate = self
         navigationController?.pushViewController(registroVC, animated: true)
     }
 }
@@ -84,5 +102,14 @@ extension MisProductosViewController: UITableViewDataSource, UITableViewDelegate
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
+    }
+}
+
+extension MisProductosViewController: RegistroProductoDelegate {
+    func didRegisterProduct(_ product: Product) {
+        // Insertamos el nuevo producto al inicio de la lista
+        self.misProductos.insert(product, at: 0)
+        // Refrescamos la tabla para que se vea el cambio
+        self.tableView.reloadData()
     }
 }

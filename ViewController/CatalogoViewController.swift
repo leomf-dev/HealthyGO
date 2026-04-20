@@ -6,10 +6,12 @@
 //
 
 import UIKit
+import CoreData
 
 final class CatalogoViewController: UIViewController {
 
-    private var productos = Product.sampleData()
+    // Cambiamos de sampleData a una lista vacía que llenaremos de la BD
+    private var productos: [Product] = []
     
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
@@ -26,24 +28,58 @@ final class CatalogoViewController: UIViewController {
         setupUI()
         setupTableView()
         
-        // Añadimos el botón del carrito en la parte superior derecha
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "cart.fill"),
             style: .plain,
             target: self,
             action: #selector(abrirCarrito)
         )
-        
-        // En setupUI o viewDidLoad de CatalogoViewController
-        navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(image: UIImage(systemName: "cart.fill"), style: .plain, target: self, action: #selector(abrirCarrito)),
-        ]
     }
     
+    // Se ejecuta cada vez que la pantalla aparece
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        cargarProductosDesdeCoreData()
+    }
+    
+    private func cargarProductosDesdeCoreData() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistentContainer.viewContext
+        
+        // Consultamos la entidad 'Product' (como en tu imagen cf70c6.jpg)
+        let request = NSFetchRequest<NSManagedObject>(entityName: "Product")
+        
+        do {
+            let resultados = try context.fetch(request)
+            
+            // Mapeamos los NSManagedObject a tu estructura Product
+            self.productos = resultados.compactMap { obj in
+                return Product(
+                    name: obj.value(forKey: "nombre") as? String ?? "",
+                    description: obj.value(forKey: "descripcion") as? String ?? "",
+                    price: obj.value(forKey: "precio") as? Double ?? 0.0,
+                    category: obj.value(forKey: "categoria") as? String ?? "General",
+                    imageNames: [obj.value(forKey: "imagenURL") as? String ?? "leaf.fill"],
+                    isAvailable: (obj.value(forKey: "stock") as? Int ?? 0) == 1
+                )
+            }
+            
+            // Opcional: Agregar los datos de prueba al final si la BD está vacía
+            if productos.isEmpty {
+                productos = Product.sampleData()
+            }
+            
+            tableView.reloadData()
+        } catch {
+            print("Error al cargar catálogo: \(error)")
+        }
+    }
+
     @objc private func abrirCarrito() {
         let carritoVC = CarritoViewController()
         navigationController?.pushViewController(carritoVC, animated: true)
     }
+
     private func setupUI() {
         title = "HealthyGo - Catálogo"
         view.backgroundColor = .systemGroupedBackground
